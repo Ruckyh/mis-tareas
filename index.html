@@ -442,7 +442,7 @@ Ejemplos:
 Respondé SOLO con JSON válido sin backticks ni texto extra:
 {"title":"título breve","datetime":"YYYY-MM-DDTHH:mm o null","list":"nombre exacto de una lista disponible","notifMin":0}`;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/interpret', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 200, messages: [{ role: 'user', content: prompt }] })
