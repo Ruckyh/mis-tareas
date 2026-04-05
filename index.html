@@ -243,9 +243,6 @@ function toggleSidebar() {
 
 function openModal() {
   renderListSelect();
-  // Solo preseleccionar si hay una lista activa, la IA puede sobreescribirla
-  if (activeList !== '__todas__') document.getElementById('inp-list-sel').value = activeList;
-  document.getElementById('inp-list-sel').dataset.aiSelected = 'false';
   document.getElementById('modal-bg').classList.add('open');
   document.getElementById('inp-title').focus();
 }
@@ -255,13 +252,15 @@ function closeModal() {
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-date').value = '';
   document.getElementById('inp-notif').value = '0';
+  document.getElementById('inp-list-sel').value = '';
   document.getElementById('voice-status').textContent = 'Presioná para dictar';
   if (listening) recognition.stop();
 }
 
 function renderListSelect() {
   const sel = document.getElementById('inp-list-sel');
-  sel.innerHTML = lists.map(l => `<option value="${l}">${l}</option>`).join('');
+  sel.innerHTML = '<option value="">— Elegir lista —</option>' + lists.map(l => '<option value="' + l + '">' + l + '</option>').join('');
+  sel.value = '';
 }
 
 function renderSidebar() {
@@ -318,7 +317,8 @@ function addTask() {
   if (!title) { showToast('Escribí un título'); return; }
   const date = document.getElementById('inp-date').value;
   const notifMin = parseInt(document.getElementById('inp-notif').value);
-  const list = document.getElementById('inp-list-sel').value || lists[0];
+  const list = document.getElementById('inp-list-sel').value;
+  if (!list) { showToast('Elegí una lista'); return; }
   const task = { id: Date.now(), title, date, list, notifMin, done: false };
   tasks.unshift(task);
   save(); scheduleNotification(task);
