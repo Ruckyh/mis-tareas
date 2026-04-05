@@ -4,128 +4,207 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mis Tareas</title>
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#4a90e2" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
-    #app { padding: 1rem; max-width: 500px; margin: 0 auto; }
-    h1 { font-size: 20px; font-weight: 600; margin-bottom: 1rem; padding-top: 0.5rem; }
-    .section-title { font-size: 11px; font-weight: 600; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .card { background: #fff; border-radius: 14px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-    input[type="text"], input[type="datetime-local"], select {
-      width: 100%; padding: 9px 12px; border: 1px solid #e0e0e0; border-radius: 8px;
-      font-size: 14px; background: #fafafa; color: #1a1a1a; outline: none;
-    }
-    input:focus, select:focus { border-color: #4a90e2; background: #fff; }
-    .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    .row input[type="datetime-local"] { flex: 1; min-width: 150px; }
-    .row select { width: 140px; }
-    .btn-primary { padding: 9px 18px; background: #4a90e2; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; white-space: nowrap; }
-    .btn-primary:hover { background: #357abd; }
-    .btn-secondary { padding: 9px 14px; background: #fff; color: #555; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; cursor: pointer; }
-    .btn-secondary:hover { background: #f5f5f5; }
-    .btn-full { width: 100%; margin-top: 8px; }
-    .lists-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .chip { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; }
-    .chip.active { background: #4a90e2; color: #fff; border-color: #4a90e2; }
-    .new-list-row { display: flex; gap: 8px; }
-    .new-list-row input { flex: 1; }
-    .mic-btn { display: flex; align-items: center; gap: 7px; padding: 9px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #555; cursor: pointer; font-size: 13px; }
-    .mic-btn.listening { background: #fff0f0; border-color: #e25c5c; color: #c0392b; }
-    .mic-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-    .voice-status { font-size: 12px; color: #aaa; flex: 1; }
-    .voice-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-    .notif-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; margin-top: 8px; }
-    .notif-row select { width: auto; }
-    .task-list { display: flex; flex-direction: column; gap: 8px; }
-    .task-card { background: #fff; border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a1a; height: 100vh; display: flex; flex-direction: column; }
+
+    /* HEADER */
+    .header { background: #4a90e2; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .header h1 { font-size: 17px; font-weight: 600; }
+    .header-btns { display: flex; gap: 8px; }
+    .btn-icon { background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+    .btn-icon:hover { background: rgba(255,255,255,0.3); }
+
+    /* LAYOUT */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; background: #fff; border-right: 1px solid #e8e8e8; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .sidebar-header { padding: 16px 14px 8px; font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
+    .list-item { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent; gap: 8px; }
+    .list-item:hover { background: #f5f7fa; }
+    .list-item.active { background: #eef4ff; border-left-color: #4a90e2; }
+    .list-item.active .list-name { color: #4a90e2; font-weight: 500; }
+    .list-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .list-name { font-size: 14px; color: #444; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .list-count { font-size: 11px; color: #aaa; background: #f0f0f0; padding: 1px 7px; border-radius: 10px; flex-shrink: 0; }
+    .list-item.active .list-count { background: #d0e4ff; color: #4a90e2; }
+    .del-list { background: transparent; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 0 2px; line-height: 1; display: none; }
+    .list-item:hover .del-list { display: block; }
+    .del-list:hover { color: #e74c3c; }
+    .sidebar-footer { padding: 12px; border-top: 1px solid #f0f0f0; margin-top: auto; }
+    .new-list-input { width: 100%; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; background: #fafafa; }
+    .new-list-input:focus { outline: none; border-color: #4a90e2; background: #fff; }
+    .btn-new-list { width: 100%; margin-top: 6px; padding: 8px; background: #4a90e2; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 500; }
+    .btn-new-list:hover { background: #357abd; }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .main-header { padding: 16px 20px 12px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .main-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .main-subtitle { font-size: 13px; color: #999; margin-top: 2px; }
+    .btn-add-task { background: #4a90e2; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
+    .btn-add-task:hover { background: #357abd; }
+
+    /* TASK LIST */
+    .task-area { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .task-card { background: #fff; border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 3px solid transparent; }
+    .task-card.reminder { border-left-color: #4a90e2; }
     .task-card.done { opacity: 0.45; }
     .task-card.done .task-title { text-decoration: line-through; }
-    .task-card.reminder { border-left: 3px solid #4a90e2; }
-    .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ccc; flex-shrink: 0; cursor: pointer; margin-top: 1px; display: flex; align-items: center; justify-content: center; background: transparent; }
+    .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ccc; flex-shrink: 0; cursor: pointer; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
     .check.checked { background: #27ae60; border-color: #27ae60; }
     .check svg { display: none; }
     .check.checked svg { display: block; }
     .task-body { flex: 1; min-width: 0; }
-    .task-title { font-size: 14px; font-weight: 500; }
+    .task-title { font-size: 14px; font-weight: 500; color: #1a1a1a; }
     .task-meta { font-size: 12px; color: #999; margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
     .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
-    .badge-list { background: #f0f0f0; color: #666; }
     .badge-vencida { background: #fdecea; color: #c0392b; }
     .badge-reminder { background: #eaf2ff; color: #2471a3; }
-    .del-btn { background: transparent; border: none; color: #ccc; cursor: pointer; font-size: 20px; line-height: 1; padding: 0 2px; }
-    .del-btn:hover { color: #e74c3c; }
-    .empty { text-align: center; color: #bbb; font-size: 13px; padding: 2rem 0; }
-    .divider { height: 1px; background: #f0f0f0; margin: 1rem 0; }
-    .notif-banner { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #795548; margin-bottom: 1rem; display: none; }
-    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 9px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99; white-space: nowrap; }
+    .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .btn-task { background: transparent; border: none; color: #ccc; cursor: pointer; font-size: 18px; padding: 0 3px; line-height: 1; }
+    .btn-task:hover { color: #e74c3c; }
+    .empty { text-align: center; color: #bbb; font-size: 14px; padding: 3rem 0; }
+    .empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+    /* MODAL */
+    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #fff; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 420px; }
+    .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; }
+    .modal label { font-size: 12px; color: #888; display: block; margin-bottom: 4px; margin-top: 10px; }
+    .modal input, .modal select { width: 100%; padding: 9px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #fafafa; color: #1a1a1a; }
+    .modal input:focus, .modal select:focus { outline: none; border-color: #4a90e2; background: #fff; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 1.2rem; }
+    .btn-cancel { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #555; font-size: 14px; cursor: pointer; }
+    .btn-save { flex: 2; padding: 10px; background: #4a90e2; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; }
+    .btn-save:hover { background: #357abd; }
+
+    /* VOZ */
+    .mic-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+    .mic-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; color: #555; cursor: pointer; font-size: 13px; }
+    .mic-btn.listening { background: #fff0f0; border-color: #e25c5c; color: #c0392b; }
+    .mic-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .voice-status { font-size: 12px; color: #aaa; }
+
+    /* COLORES DE LISTAS */
+    .color-0 { background: #4a90e2; }
+    .color-1 { background: #27ae60; }
+    .color-2 { background: #e67e22; }
+    .color-3 { background: #9b59b6; }
+    .color-4 { background: #e74c3c; }
+    .color-5 { background: #1abc9c; }
+    .color-6 { background: #f39c12; }
+    .color-7 { background: #2c3e50; }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      .sidebar { width: 200px; }
+      .main-header { padding: 12px 14px; }
+      .task-area { padding: 12px 14px; }
+    }
+    @media (max-width: 480px) {
+      .sidebar { position: fixed; left: -220px; top: 0; bottom: 0; z-index: 50; transition: left 0.25s; box-shadow: 2px 0 12px rgba(0,0,0,0.1); }
+      .sidebar.open { left: 0; }
+      .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 49; }
+      .overlay.open { display: block; }
+    }
+
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 9px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200; white-space: nowrap; }
     .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
-<div id="app">
-  <h1>Mis tareas</h1>
 
-  <div id="notif-banner" class="notif-banner">
-    Activá las notificaciones en Chrome para recibir recordatorios.
+<div class="header">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-icon" onclick="toggleSidebar()" id="menu-btn">☰</button>
+    <h1 id="header-title">Mis Tareas</h1>
+  </div>
+  <div class="header-btns">
+    <button class="btn-icon" onclick="openModal()">+ Nueva tarea</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">Mis listas</div>
+    <div id="list-items"></div>
+    <div class="sidebar-footer">
+      <input class="new-list-input" type="text" id="inp-new-list" placeholder="Nombre de nueva lista..." />
+      <button class="btn-new-list" onclick="createList()">+ Crear lista</button>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="section-title">Mis listas</div>
-    <div class="lists-row" id="lists-row">
-      <span class="chip active" onclick="selectList('__todas__', this)">Todas</span>
+  <div class="main">
+    <div class="main-header">
+      <div>
+        <div class="main-title" id="main-title">Todas las tareas</div>
+        <div class="main-subtitle" id="main-subtitle"></div>
+      </div>
     </div>
-    <div class="new-list-row">
-      <input type="text" id="inp-new-list" placeholder="Nueva lista..." />
-      <button class="btn-secondary" onclick="createList()">+ Crear</button>
-    </div>
+    <div class="task-area" id="task-area"></div>
   </div>
+</div>
 
-  <div class="card">
-    <div class="section-title">Nueva tarea</div>
-    <div class="voice-row">
+<!-- MODAL NUEVA TAREA -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h2>Nueva tarea</h2>
+
+    <div class="mic-row">
       <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">
         <span class="mic-dot"></span>
         <span id="mic-label">Hablar tarea</span>
       </button>
       <span class="voice-status" id="voice-status">Presioná para dictar</span>
     </div>
-    <input type="text" id="inp-title" placeholder="Título de la tarea..." />
-    <div class="row">
-      <input type="datetime-local" id="inp-date" />
-      <select id="inp-list-sel"></select>
-    </div>
-    <div class="notif-row">
-      <span>Recordatorio:</span>
-      <select id="inp-notif">
-        <option value="0">Sin recordatorio</option>
-        <option value="5">5 min antes</option>
-        <option value="15">15 min antes</option>
-        <option value="30">30 min antes</option>
-        <option value="60">1 hora antes</option>
-        <option value="1440">1 día antes</option>
-      </select>
-    </div>
-    <button class="btn-primary btn-full" onclick="addTask()">+ Agregar tarea</button>
-  </div>
 
-  <div class="task-list" id="task-list"></div>
+    <label>Título</label>
+    <input type="text" id="inp-title" placeholder="¿Qué tenés que hacer?" />
+
+    <label>Lista</label>
+    <select id="inp-list-sel"></select>
+
+    <label>Fecha y hora</label>
+    <input type="datetime-local" id="inp-date" />
+
+    <label>Recordatorio</label>
+    <select id="inp-notif">
+      <option value="0">Sin recordatorio</option>
+      <option value="5">5 minutos antes</option>
+      <option value="15">15 minutos antes</option>
+      <option value="30">30 minutos antes</option>
+      <option value="60">1 hora antes</option>
+      <option value="1440">1 día antes</option>
+    </select>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="addTask()">Guardar tarea</button>
+    </div>
+  </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-let tasks = JSON.parse(localStorage.getItem('eb_tasks_v3') || '[]');
-let lists = JSON.parse(localStorage.getItem('eb_lists_v3') || '["General"]');
+let tasks = JSON.parse(localStorage.getItem('eb_tasks_v4') || '[]');
+let lists = JSON.parse(localStorage.getItem('eb_lists_v4') || '["General","Seguros","Rugby","Familia"]');
 let activeList = '__todas__';
 let recognition = null;
 let listening = false;
 let notifGranted = false;
+const COLORS = ['color-0','color-1','color-2','color-3','color-4','color-5','color-6','color-7'];
 
 function save() {
-  localStorage.setItem('eb_tasks_v3', JSON.stringify(tasks));
-  localStorage.setItem('eb_lists_v3', JSON.stringify(lists));
+  localStorage.setItem('eb_tasks_v4', JSON.stringify(tasks));
+  localStorage.setItem('eb_lists_v4', JSON.stringify(lists));
 }
 
 function showToast(msg) {
@@ -135,69 +214,101 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+function colorFor(i) { return COLORS[i % COLORS.length]; }
+
 async function requestNotifications() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') { notifGranted = true; return; }
   if (Notification.permission !== 'denied') {
-    const perm = await Notification.requestPermission();
-    notifGranted = perm === 'granted';
-    if (!notifGranted) document.getElementById('notif-banner').style.display = 'block';
-  } else {
-    document.getElementById('notif-banner').style.display = 'block';
+    const p = await Notification.requestPermission();
+    notifGranted = p === 'granted';
   }
 }
 
 function scheduleNotification(task) {
   if (!notifGranted || !task.date || !task.notifMin) return;
-  const fireAt = new Date(task.date).getTime() - task.notifMin * 60000;
-  const delay = fireAt - Date.now();
+  const delay = new Date(task.date).getTime() - task.notifMin * 60000 - Date.now();
   if (delay <= 0) return;
   setTimeout(() => {
     if (!task.done) new Notification('Recordatorio: ' + task.title, {
-      body: 'Vence: ' + new Date(task.date).toLocaleString('es-AR')
+      body: new Date(task.date).toLocaleString('es-AR')
     });
   }, delay);
 }
 
-function renderLists() {
-  const row = document.getElementById('lists-row');
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+
+function openModal() {
+  renderListSelect();
+  if (activeList !== '__todas__') document.getElementById('inp-list-sel').value = activeList;
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('inp-title').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-date').value = '';
+  document.getElementById('inp-notif').value = '0';
+  document.getElementById('voice-status').textContent = 'Presioná para dictar';
+  if (listening) recognition.stop();
+}
+
+function renderListSelect() {
   const sel = document.getElementById('inp-list-sel');
-  row.innerHTML = `<span class="chip ${activeList === '__todas__' ? 'active' : ''}" onclick="selectList('__todas__', this)">Todas</span>`;
-  sel.innerHTML = '';
-  lists.forEach(l => {
-    const chip = document.createElement('span');
-    chip.className = 'chip' + (activeList === l ? ' active' : '');
-    chip.innerHTML = `${l} <span onclick="deleteList('${l}', event)" style="margin-left:4px;opacity:0.5;cursor:pointer;">×</span>`;
-    chip.onclick = (e) => { if (e.target.tagName !== 'SPAN' || !e.target.getAttribute('onclick')) selectList(l, chip); };
-    row.appendChild(chip);
-    const opt = document.createElement('option');
-    opt.value = l; opt.textContent = l;
-    sel.appendChild(opt);
+  sel.innerHTML = lists.map(l => `<option value="${l}">${l}</option>`).join('');
+}
+
+function renderSidebar() {
+  const container = document.getElementById('list-items');
+  const pendingAll = tasks.filter(t => !t.done).length;
+
+  let html = `<div class="list-item ${activeList === '__todas__' ? 'active' : ''}" onclick="selectList('__todas__')">
+    <span class="list-dot" style="background:#4a90e2;"></span>
+    <span class="list-name">Todas</span>
+    <span class="list-count">${pendingAll}</span>
+  </div>`;
+
+  lists.forEach((l, i) => {
+    const count = tasks.filter(t => t.list === l && !t.done).length;
+    html += `<div class="list-item ${activeList === l ? 'active' : ''}" onclick="selectList('${l}')">
+      <span class="list-dot ${colorFor(i)}"></span>
+      <span class="list-name">${l}</span>
+      <span class="list-count">${count}</span>
+      <button class="del-list" onclick="deleteList('${l}', event)">×</button>
+    </div>`;
   });
+
+  container.innerHTML = html;
+}
+
+function selectList(l) {
+  activeList = l;
+  renderSidebar();
+  renderTasks();
+  if (window.innerWidth <= 480) toggleSidebar();
 }
 
 function createList() {
   const name = document.getElementById('inp-new-list').value.trim();
-  if (!name || lists.includes(name)) return;
+  if (!name || lists.includes(name)) { showToast('Nombre inválido o ya existe'); return; }
   lists.push(name);
-  save(); renderLists(); renderTasks();
+  save(); renderSidebar(); renderTasks();
   document.getElementById('inp-new-list').value = '';
+  showToast(`Lista "${name}" creada`);
 }
 
 function deleteList(name, e) {
   e.stopPropagation();
-  if (!confirm(`¿Eliminar la lista "${name}"?`)) return;
+  if (!confirm(`¿Eliminar la lista "${name}"? Las tareas pasarán a General.`)) return;
   lists = lists.filter(l => l !== name);
+  if (!lists.includes('General')) lists.unshift('General');
   tasks.forEach(t => { if (t.list === name) t.list = 'General'; });
   if (activeList === name) activeList = '__todas__';
-  save(); renderLists(); renderTasks();
-}
-
-function selectList(l, el) {
-  activeList = l;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderTasks();
+  save(); renderSidebar(); renderTasks();
 }
 
 function addTask() {
@@ -205,32 +316,78 @@ function addTask() {
   if (!title) { showToast('Escribí un título'); return; }
   const date = document.getElementById('inp-date').value;
   const notifMin = parseInt(document.getElementById('inp-notif').value);
-  const list = document.getElementById('inp-list-sel').value || lists[0] || 'General';
+  const list = document.getElementById('inp-list-sel').value || lists[0];
   const task = { id: Date.now(), title, date, list, notifMin, done: false };
   tasks.unshift(task);
   save(); scheduleNotification(task);
-  document.getElementById('inp-title').value = '';
-  document.getElementById('inp-date').value = '';
-  document.getElementById('inp-notif').value = '0';
-  showToast('Tarea agregada'); renderTasks();
+  closeModal(); renderSidebar(); renderTasks();
+  showToast('Tarea agregada');
 }
 
 function toggle(id) {
   const t = tasks.find(t => t.id === id);
-  if (t) { t.done = !t.done; save(); renderTasks(); }
+  if (t) { t.done = !t.done; save(); renderSidebar(); renderTasks(); }
 }
 
 function remove(id) {
   if (!confirm('¿Eliminar esta tarea?')) return;
   tasks = tasks.filter(t => t.id !== id);
-  save(); renderTasks();
+  save(); renderSidebar(); renderTasks();
 }
 
 function isVencida(t) { return t.date && !t.done && new Date(t.date) < new Date(); }
 
+function renderTasks() {
+  const list = activeList === '__todas__' ? tasks : tasks.filter(t => t.list === activeList);
+  const pending = list.filter(t => !t.done).length;
+  const total = list.length;
+
+  document.getElementById('main-title').textContent = activeList === '__todas__' ? 'Todas las tareas' : activeList;
+  document.getElementById('main-subtitle').textContent = `${pending} pendiente${pending !== 1 ? 's' : ''} de ${total}`;
+  document.getElementById('header-title').textContent = activeList === '__todas__' ? 'Mis Tareas' : activeList;
+
+  const el = document.getElementById('task-area');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">✓</div>No hay tareas en esta lista.<br><br><button onclick="openModal()" style="background:#4a90e2;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:14px;cursor:pointer;">+ Agregar tarea</button></div>`;
+    return;
+  }
+
+  const pending_tasks = list.filter(t => !t.done);
+  const done_tasks = list.filter(t => t.done);
+  const sorted = [...pending_tasks, ...done_tasks];
+
+  el.innerHTML = sorted.map(t => {
+    const dateStr = t.date ? new Date(t.date).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    const vencida = isVencida(t);
+    const hasReminder = t.notifMin > 0 && t.date;
+    const listIdx = lists.indexOf(t.list);
+    const dotColor = listIdx >= 0 ? colorFor(listIdx) : 'color-0';
+    return `<div class="task-card ${t.done ? 'done' : ''} ${hasReminder ? 'reminder' : ''}">
+      <div class="check ${t.done ? 'checked' : ''}" onclick="toggle(${t.id})">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="task-body">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">
+          ${activeList === '__todas__' ? `<span style="display:inline-flex;align-items:center;gap:4px;"><span class="list-dot ${dotColor}" style="width:7px;height:7px;border-radius:50%;display:inline-block;"></span><span>${t.list}</span></span>` : ''}
+          ${dateStr ? `<span>${dateStr}</span>` : ''}
+          ${hasReminder ? `<span class="badge badge-reminder">Recordatorio</span>` : ''}
+          ${vencida ? `<span class="badge badge-vencida">Vencida</span>` : ''}
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="btn-task" onclick="remove(${t.id})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// VOZ
 function toggleVoice() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    showToast('Usá Chrome para voz'); return;
+    showToast('Usá Chrome para reconocimiento de voz'); return;
   }
   if (listening) { recognition.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -257,7 +414,6 @@ function resetMic() {
   listening = false;
   document.getElementById('mic-btn').classList.remove('listening');
   document.getElementById('mic-label').textContent = 'Hablar tarea';
-  document.getElementById('voice-status').textContent = 'Presioná para dictar';
 }
 
 async function interpretWithAI(transcript) {
@@ -280,49 +436,19 @@ Reglas: title=resumen breve. datetime=interpretá fechas relativas. list=elegí 
     if (parsed.datetime && parsed.datetime !== 'null') document.getElementById('inp-date').value = parsed.datetime;
     if (parsed.list && lists.includes(parsed.list)) document.getElementById('inp-list-sel').value = parsed.list;
     if (parsed.notifMin > 0) document.getElementById('inp-notif').value = String(parsed.notifMin);
-    document.getElementById('voice-status').textContent = 'Revisá y agregá la tarea.';
+    document.getElementById('voice-status').textContent = 'Revisá y guardá la tarea.';
     showToast('Campos completados por IA');
   } catch {
     document.getElementById('inp-title').value = transcript;
-    document.getElementById('voice-status').textContent = 'Texto cargado sin interpretar';
+    document.getElementById('voice-status').textContent = 'Texto cargado directamente';
   }
 }
 
-function renderTasks() {
-  let list = tasks.filter(t => activeList === '__todas__' || t.list === activeList);
-  const el = document.getElementById('task-list');
-  if (!list.length) { el.innerHTML = '<div class="empty">No hay tareas en esta lista.</div>'; return; }
-  el.innerHTML = list.map(t => {
-    const dateStr = t.date ? new Date(t.date).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    const vencida = isVencida(t);
-    const hasReminder = t.notifMin > 0 && t.date;
-    return `<div class="task-card ${t.done ? 'done' : ''} ${hasReminder ? 'reminder' : ''}">
-      <div class="check ${t.done ? 'checked' : ''}" onclick="toggle(${t.id})">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="task-body">
-        <div class="task-title">${t.title}</div>
-        <div class="task-meta">
-          <span class="badge badge-list">${t.list || 'General'}</span>
-          ${dateStr ? `<span>${dateStr}</span>` : ''}
-          ${hasReminder ? `<span class="badge badge-reminder">Recordatorio</span>` : ''}
-          ${vencida ? `<span class="badge badge-vencida">Vencida</span>` : ''}
-        </div>
-      </div>
-      <button class="del-btn" onclick="remove(${t.id})">×</button>
-    </div>`;
-  }).join('');
-}
-
 requestNotifications();
-renderLists();
+renderSidebar();
 renderTasks();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
