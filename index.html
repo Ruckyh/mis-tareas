@@ -421,11 +421,26 @@ function resetMic() {
 async function interpretWithAI(transcript) {
   const now = new Date().toISOString();
   const listNames = lists.join(', ');
-  const prompt = `Hoy es ${now}. Listas disponibles: ${listNames}.
+  const prompt = `Sos un asistente que interpreta tareas dictadas por voz en español rioplatense.
+
+Hoy es ${now}.
+Listas disponibles: ${listNames}.
 El usuario dictó: "${transcript}"
-Respondé SOLO con JSON válido sin backticks:
-{"title":"título breve","datetime":"YYYY-MM-DDTHH:mm o null","list":"nombre exacto de una lista","notifMin":0}
-Reglas: title=resumen breve. datetime=interpretá fechas relativas. list=elegí la más apropiada. notifMin=30 si menciona recordatorio, sino 0.`;
+
+Tu tarea es extraer:
+1. TÍTULO: la acción o tarea concreta, sin menciones a listas ni palabras como "agregar", "añadir", "anotar", "en la lista". Solo la tarea en sí.
+2. LISTA: si el usuario menciona explícitamente el nombre de una lista (ej: "en seguros", "a rugby", "en familia"), usá ese nombre exacto. Si no lo menciona, inferí la lista más apropiada según el contexto.
+3. FECHA: si menciona fecha u hora, convertila a formato YYYY-MM-DDTHH:mm. Si no, null.
+4. RECORDATORIO: 30 si menciona "recordatorio", "avisame", "notificame". Si no, 0.
+
+Ejemplos:
+- "agregar enviar correo a la lista seguros" → title="Enviar correo", list="Seguros"
+- "llamar a González mañana a las 10 en seguros" → title="Llamar a González", list="Seguros", datetime="mañana 10:00"
+- "entrenamiento de rugby el jueves" → title="Entrenamiento", list="Rugby"
+- "turno médico de los chicos el viernes" → title="Turno médico de los chicos", list="Familia"
+
+Respondé SOLO con JSON válido sin backticks ni texto extra:
+{"title":"título breve","datetime":"YYYY-MM-DDTHH:mm o null","list":"nombre exacto de una lista disponible","notifMin":0}`;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
