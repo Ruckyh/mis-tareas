@@ -169,7 +169,7 @@
     <input type="text" id="inp-title" placeholder="¿Qué tenés que hacer?" />
 
     <label>Lista</label>
-    <select id="inp-list-sel"></select>
+    <select id="inp-list-sel" onchange="this.dataset.aiSelected='false'"></select>
 
     <label>Fecha y hora</label>
     <input type="datetime-local" id="inp-date" />
@@ -243,7 +243,9 @@ function toggleSidebar() {
 
 function openModal() {
   renderListSelect();
+  // Solo preseleccionar si hay una lista activa, la IA puede sobreescribirla
   if (activeList !== '__todas__') document.getElementById('inp-list-sel').value = activeList;
+  document.getElementById('inp-list-sel').dataset.aiSelected = 'false';
   document.getElementById('modal-bg').classList.add('open');
   document.getElementById('inp-title').focus();
 }
@@ -434,7 +436,10 @@ Reglas: title=resumen breve. datetime=interpretá fechas relativas. list=elegí 
     const parsed = JSON.parse(data.content.map(i => i.text || '').join('').trim());
     document.getElementById('inp-title').value = parsed.title || transcript;
     if (parsed.datetime && parsed.datetime !== 'null') document.getElementById('inp-date').value = parsed.datetime;
-    if (parsed.list && lists.includes(parsed.list)) document.getElementById('inp-list-sel').value = parsed.list;
+    if (parsed.list && lists.includes(parsed.list)) {
+      document.getElementById('inp-list-sel').value = parsed.list;
+      document.getElementById('inp-list-sel').dataset.aiSelected = 'true';
+    }
     if (parsed.notifMin > 0) document.getElementById('inp-notif').value = String(parsed.notifMin);
     document.getElementById('voice-status').textContent = 'Revisá y guardá la tarea.';
     showToast('Campos completados por IA');
