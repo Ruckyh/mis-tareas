@@ -451,9 +451,12 @@ Respondé SOLO con JSON válido sin backticks ni texto extra:
     const parsed = JSON.parse(data.content.map(i => i.text || '').join('').trim());
     document.getElementById('inp-title').value = parsed.title || transcript;
     if (parsed.datetime && parsed.datetime !== 'null') document.getElementById('inp-date').value = parsed.datetime;
-    if (parsed.list && lists.includes(parsed.list)) {
-      document.getElementById('inp-list-sel').value = parsed.list;
-      document.getElementById('inp-list-sel').dataset.aiSelected = 'true';
+    if (parsed.list) {
+      const match = lists.find(l => l.toLowerCase() === parsed.list.toLowerCase());
+      if (match) {
+        document.getElementById('inp-list-sel').value = match;
+        document.getElementById('inp-list-sel').dataset.aiSelected = 'true';
+      }
     }
     if (parsed.notifMin > 0) document.getElementById('inp-notif').value = String(parsed.notifMin);
     document.getElementById('voice-status').textContent = 'Revisá y guardá la tarea.';
